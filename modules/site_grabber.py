@@ -56,7 +56,7 @@ def barrick_grabber(url=None, params=None, file_name=None):
         url = url + SEARCH
 
     if not params:
-        params = '&keyword=managers'
+        params = '&keyword='
 
     if not file_name:
         data_parsed = datetime.datetime.now()
@@ -81,8 +81,8 @@ def barrick_grabber(url=None, params=None, file_name=None):
         return
 
     jobs = jobs[len(jobs) / 2:]
-    logging.info(u'Found %s jobs. Scraping...' % str(jobs))
-    print u'Found %s jobs. Scraping...' % str(jobs)
+    logging.info(u'Found %s jobs. Scraping...' % len(jobs))
+    print u'Found %s jobs. Scraping...' % len(jobs)
 
     success = 0
     for job in jobs:

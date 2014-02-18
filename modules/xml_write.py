@@ -35,47 +35,47 @@ class XmlWriter():
 
         key = etree.SubElement(job, 'key')
         if key_data:
-            key.text = key_data
+            key.text = etree.CDATA(key_data)
 
         title = etree.SubElement(job, 'title')
         if title_data:
-            title.text = title_data
+            title.text = etree.CDATA(title_data)
 
         company = etree.SubElement(job, 'company')
         if company_data:
-            company.text = company_data
+            company.text = etree.CDATA(company_data)
 
         city = etree.SubElement(job, 'city')
         if city_data:
-            city.text = city_data
+            city.text = etree.CDATA(city_data)
 
         state = etree.SubElement(job, 'state')
         if state_data:
-            state.text = state_data
+            state.text = etree.CDATA(state_data)
 
         country = etree.SubElement(job, 'country')
         if country_data:
-            country.text = country_data
+            country.text = etree.CDATA(country_data)
 
         url = etree.SubElement(job, 'url')
         if url_data:
-            url.text = url_data
+            url.text = etree.CDATA(url_data)
 
         snippet = etree.SubElement(job, 'snippet')
         if snippet_data:
-            snippet.text = snippet_data
+            snippet.text = etree.CDATA(snippet_data)
 
         date_posted = etree.SubElement(job, 'date_posted')
         if date_posted_data:
-            date_posted.text = date_posted_data
+            date_posted.text = etree.CDATA(date_posted_data)
 
         date_added = etree.SubElement(job, 'date_added')
         if date_added_data:
-            date_added.text = date_added_data
+            date_added.text = etree.CDATA(date_added_data)
 
         provider = etree.SubElement(job, 'provider')
         if provider_data:
-            provider.text = provider_data
+            provider.text = etree.CDATA(provider_data)
 
     def write_doc(self):
         file_name = self.scraper_name + '-' + self.data_parsed.strftime('%Y%m%d%I%m%S') + '.xml'

@@ -2,6 +2,7 @@ __author__ = 'dimas'
 
 import argparse
 
+
 def main():
     parser = argparse.ArgumentParser()
 
@@ -25,7 +26,7 @@ def main():
 
     args = parser.parse_args()
 
-    from site_grabber import barrick_grabber
+    from modules.site_grabber import barrick_grabber
 
     barrick_grabber(params=args.p)
 

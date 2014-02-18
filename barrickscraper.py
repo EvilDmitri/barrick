@@ -1,4 +1,5 @@
-__author__ = 'dimas'
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 import argparse
 
@@ -28,7 +29,7 @@ def main():
 
     from modules.site_grabber import barrick_grabber
 
-    barrick_grabber(params=args.p)
+    barrick_grabber(url=args.u, params=args.post_params, file_name=args.f)
 
 
 if __name__ == '__main__':

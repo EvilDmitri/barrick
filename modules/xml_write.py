@@ -1,14 +1,15 @@
-__author__ = 'dimas'
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 from lxml import etree
-import datetime
+
 
 class XmlWriter():
-    def __init__(self,
-                 scraper_name=''
+    def __init__(self, scraper_name='', date='',
                  ):
+
         self.scraper_name = scraper_name
-        self.data_parsed = datetime.datetime.now()
+        self.data_parsed = date
 
         self.data = etree.Element('data',
                                   scraper='{0}'.format(scraper_name),
@@ -77,7 +78,6 @@ class XmlWriter():
         if provider_data:
             provider.text = etree.CDATA(provider_data)
 
-    def write_doc(self):
-        file_name = self.scraper_name + '-' + self.data_parsed.strftime('%Y%m%d%I%m%S') + '.xml'
+    def write_doc(self, file_name):
         with open(file_name, 'w') as outFile:
             self.doc.write(outFile, xml_declaration=True, encoding='utf-16', pretty_print=True)

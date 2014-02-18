@@ -1,26 +1,26 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import datetime
+import logging
+
 __author__ = 'dimas'
 
 import re
-import os
 
 from grab import Grab, GrabTimeoutError
 
 from modules.xml_write import XmlWriter
+from settings import *
 
 
-FILE_PATH = os.path.realpath(__file__).split(os.path.sep)[-1]
-
-BASE_URL = 'https://barrick.taleo.net/'
-
-SEARCH_URL = 'https://barrick.taleo.net/careersection/2/jobsearch.ftl'
-
-job_url = 'https://barrick.taleo.net/careersection/jobdetail.ftl?job={0}'
-
-
-def job_grabber(page, writer):
+def job_grabber(page, writer, snippet):
     url = job_url.format(page)
     g = Grab()
-    g.go(url)
+    try:
+        g.go(url)
+    except GrabTimeoutError:
+        logging.error(u'error|timeout|%s' % GrabTimeoutError)
     data = g.doc.select('//input[@name="initialHistory"]')
 
     values = data.attr('value').split('!|!')
@@ -42,18 +42,27 @@ def job_grabber(page, writer):
 
     date_posted = ','.join(values[28].split(',')[:-1])
 
-    writer.append_job(url_data=url, key_data=key, title_data=title, country_data=country, state_data=state, city_data=city,
-                      date_posted_data=date_posted, provider_data='barrickscraper'
+    writer.append_job(url_data=url, key_data=key, title_data=title, country_data=country, state_data=state,
+                      city_data=city, date_posted_data=date_posted, provider_data='barrickscraper', snippet_data=snippet
                       )
 
+    return True
 
-def barrick_grabber(params=None, url=None):
+
+def barrick_grabber(url=None, params=None, file_name=None):
     if not url:
         url = SEARCH_URL
+    else:
+        url = url + SEARCH
+
     if not params:
         params = '&keyword=managers'
 
-    xml_writer = XmlWriter(scraper_name='barrick')
+    if not file_name:
+        data_parsed = datetime.datetime.now()
+        file_name = 'barrick' + '-' + data_parsed.strftime('%Y%m%d%I%m%S') + '.xml'
+
+    xml_writer = XmlWriter(scraper_name=file_name)
 
     g = Grab()
     g.setup(headers={'Cache-Control': 'private', 'P3P': 'CP="CAO PSA OUR', 'Transfer-Encoding': 'chunked'})
@@ -61,18 +70,26 @@ def barrick_grabber(params=None, url=None):
     try:
         g.go(url)
     except GrabTimeoutError:
-        print 'error|timeout'
+        logging.error(u'error|timeout|%s' % GrabTimeoutError)
+        logging.critical(u'error|Service unavailable')
         return
 
     html = g.response.body
     jobs = re.findall(r'job=([^(]*)%', html)
     if not jobs:
-        print 'error|nojobs'
+        logging.error(u'error|nojobs')
         return
 
     jobs = jobs[len(jobs) / 2:]
+    logging.info(u'Found %s jobs. Scraping...' % str(jobs))
+    print u'Found %s jobs. Scraping...' % str(jobs)
+
+    success = 0
     for job in jobs:
-        job_grabber(job, xml_writer)
+        result = job_grabber(job, xml_writer, params)
+        if result:
+            success += 1
+    logging.info(u'%s jobs scraped' % success)
+    print u'%s jobs scraped' % success
 
-
-    xml_writer.write_doc()
+    xml_writer.write_doc(file_name)

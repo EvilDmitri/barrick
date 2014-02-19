@@ -11,10 +11,10 @@ import re
 from grab import Grab, GrabTimeoutError
 
 from modules.xml_write import XmlWriter
-from settings import *
+from modules.settings import *
 
 
-def job_grabber(page, writer, snippet):
+def job_grabber(page, writer, snippet, company):
     url = job_url.format(page)
     g = Grab()
     try:
@@ -43,24 +43,28 @@ def job_grabber(page, writer, snippet):
     date_posted = ','.join(values[28].split(',')[:-1])
 
     writer.append_job(url_data=url, key_data=key, title_data=title, country_data=country, state_data=state,
-                      city_data=city, date_posted_data=date_posted, provider_data='barrickscraper', snippet_data=snippet
+                      city_data=city, date_posted_data=date_posted, provider_data=company + 'scraper',
+                      snippet_data=snippet, date_added_data=datetime.datetime.now().strftime('%Y%m%d%I%m'), company_data=company
                       )
 
     return True
 
 
-def barrick_grabber(url=None, params=None, file_name=None):
-    if not url:
+def barrick_grabber(url=None, params=None, file_name=None, company=None):
+    if url is None:
         url = SEARCH_URL
     else:
         url = url + SEARCH
 
-    if not params:
-        params = '&keyword='
+    if company is None:
+        company = 'barrick'
 
-    if not file_name:
+    if params is None:
+        params = '&keyword=managers'
+
+    if file_name is None:
         data_parsed = datetime.datetime.now()
-        file_name = 'barrick' + '-' + data_parsed.strftime('%Y%m%d%I%m%S') + '.xml'
+        file_name = company + '-' + data_parsed.strftime('%Y%m%d%I%m%S') + '.xml'
 
     xml_writer = XmlWriter(scraper_name=file_name)
 
@@ -86,7 +90,7 @@ def barrick_grabber(url=None, params=None, file_name=None):
 
     success = 0
     for job in jobs:
-        result = job_grabber(job, xml_writer, params)
+        result = job_grabber(page=job, writer=xml_writer, snippet=params, company=company)
         if result:
             success += 1
     logging.info(u'%s jobs scraped' % success)

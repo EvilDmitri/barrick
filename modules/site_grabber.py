@@ -60,7 +60,8 @@ def barrick_grabber(url=None, params=None, file_name=None, company=None):
         company = 'barrick'
 
     if params is None:
-        params = '&keyword=managers'
+        params = '&keyword='
+    params = '&rdPager.currentPage=3' + params
 
     if file_name is None:
         data_parsed = datetime.datetime.now()
@@ -73,12 +74,14 @@ def barrick_grabber(url=None, params=None, file_name=None, company=None):
     g.setup(post=params)
     try:
         g.go(url)
+
     except GrabTimeoutError:
         logging.error(u'error|timeout|%s' % GrabTimeoutError)
         logging.critical(u'error|Service unavailable')
         return
 
     html = g.response.body
+    # ToDo Find ALL the Jobs (data.html)
     jobs = re.findall(r'job=([^(]*)%', html)
     if not jobs:
         logging.error(u'error|nojobs')

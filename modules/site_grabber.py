@@ -1,19 +1,21 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
 import HTMLParser
 
 import datetime
 import logging
 import urllib
-
-__author__ = 'dimas'
-
 import re
 
 from grab import Grab, GrabTimeoutError
 
 from modules.xml_write import XmlWriter
 from modules.settings import *
+
+
+TAG_RE = re.compile(r'<[^>]+>')
+pClnUp = re.compile(r'\n|\t|\xa0|0xc2|\\')
 
 
 def get_data_from_html(data):
@@ -23,11 +25,9 @@ def get_data_from_html(data):
     snippet = h.unescape(snippet)
     s = snippet[3:]
     snippet = s.encode('utf-8')
-
-    TAG_RE = re.compile(r'<[^>]+>')
+    # Clean from tags
     snippet = TAG_RE.sub('', snippet)
-
-    pClnUp = re.compile(r'\n|\t|\xa0|0xc2|\\')
+    #Clean from command chars
     clean_text = str(pClnUp.sub('', snippet))
 
     snippet = clean_text[:1000]
@@ -68,7 +68,8 @@ def job_grabber(page, writer, company):
 
     writer.append_job(url_data=url, key_data=key, title_data=title, country_data=country, state_data=state,
                       city_data=city, date_posted_data=date_posted, provider_data=company + 'scraper',
-                      snippet_data=snippet, date_added_data=datetime.datetime.now().strftime('%Y%m%d%I%m'), company_data=company
+                      snippet_data=snippet, date_added_data=datetime.datetime.now().strftime('%Y%m%d%I%m'),
+                      company_data=company
                       )
 
     return True

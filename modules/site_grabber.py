@@ -1,8 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import HTMLParser
 
 import datetime
 import logging
+import urllib
 
 __author__ = 'dimas'
 
@@ -14,7 +16,27 @@ from modules.xml_write import XmlWriter
 from modules.settings import *
 
 
-def job_grabber(page, writer, snippet, company):
+def get_data_from_html(data):
+    """Cleans data from tags, special symbols"""
+    snippet = urllib.unquote(data)
+    h = HTMLParser.HTMLParser()
+    snippet = h.unescape(snippet)
+    s = snippet[3:]
+    snippet = s.encode('utf-8')
+
+    TAG_RE = re.compile(r'<[^>]+>')
+    snippet = TAG_RE.sub('', snippet)
+
+    pClnUp = re.compile(r'\n|\t|\xa0|0xc2|\\')
+    clean_text = str(pClnUp.sub('', snippet))
+
+    snippet = clean_text[:1000]
+    print snippet
+    print
+    return snippet.decode('utf8', 'ignore')
+
+
+def job_grabber(page, writer, company):
     url = job_url.format(page)
     g = Grab()
     try:
@@ -24,6 +46,8 @@ def job_grabber(page, writer, snippet, company):
     data = g.doc.select('//input[@name="initialHistory"]')
 
     values = data.attr('value').split('!|!')
+
+    snippet = get_data_from_html(values[19])
 
     key = values[16]
     title = values[15] + '-' + key
@@ -93,7 +117,7 @@ def barrick_grabber(url=None, params=None, file_name=None, company=None):
 
     success = 0
     for job in jobs:
-        result = job_grabber(page=job, writer=xml_writer, snippet=params, company=company)
+        result = job_grabber(page=job, writer=xml_writer, company=company)
         if result:
             success += 1
     logging.info(u'%s jobs scraped' % success)

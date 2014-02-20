@@ -16,10 +16,6 @@ from modules.xml_write import XmlWriter
 from modules.settings import *
 
 
-j = \
-    ['073248', '073247', '073244', '073228', '073235', '073237', '072827', '072826', '073225', '073226', '072829', '073204', '073147', '073207', '073205', '073072', '073197', '073162', '073169', '073193', '073168', '073164', '073108', '073157', '072364']
-
-
 def get_data_from_html(data):
     """Cleans data from tags, special symbols"""
     snippet = urllib.unquote(data)
@@ -98,11 +94,6 @@ def barrick_grabber(url=None, params=None, file_name=None, company=None):
     xml_writer = XmlWriter(scraper_name=file_name)
 
     g = Grab()
-    # g.setup(headers={
-    #     'Cache-Control': 'private',
-    #     'P3P': 'CP="CAO PSA OUR',
-    #     'Transfer-Encoding': 'chunked',
-    # })
     g.setup(post=params)
     try:
         g.go(url)
@@ -113,7 +104,6 @@ def barrick_grabber(url=None, params=None, file_name=None, company=None):
         return
 
     html = g.response.body
-    # ToDo Find ALL the Jobs (data.html)
     jobs = re.findall(r'job=([^(]*)%', html)
     if not jobs:
         logging.error(u'error|nojobs')
@@ -133,6 +123,5 @@ def barrick_grabber(url=None, params=None, file_name=None, company=None):
 
     logging.info(u'%s jobs scraped' % success)
     print u'%s jobs scraped' % success
-
 
     xml_writer.write_doc(file_name)

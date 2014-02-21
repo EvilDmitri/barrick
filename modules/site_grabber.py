@@ -75,7 +75,7 @@ def job_grabber(page, writer, company):
     return True
 
 
-def barrick_grabber(url=None, params=None, file_name=None, company=None):
+def barrick_grabber(url=None, params=None, file_name=None, company=None, pages=None):
     if url is None:
         url = SEARCH_URL
     else:
@@ -86,7 +86,11 @@ def barrick_grabber(url=None, params=None, file_name=None, company=None):
 
     if params is None:
         params = '&keyword='
-    params += '&dropListSize=200'
+
+    if pages is None:
+        params += '&dropListSize=25'
+    else:
+        params += '&dropListSize=%s' % str(25 * pages)
 
     if file_name is None:
         data_parsed = datetime.datetime.now()

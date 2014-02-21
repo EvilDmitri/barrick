@@ -29,7 +29,7 @@ def main():
 
     from modules.site_grabber import barrick_grabber
 
-    barrick_grabber(url=args.u, params=args.post_params, file_name=args.f)
+    barrick_grabber(url=args.u, params=args.post_params, file_name=args.f, pages=args.page)
 
 
 if __name__ == '__main__':

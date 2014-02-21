@@ -90,7 +90,7 @@ def barrick_grabber(url=None, params=None, file_name=None, company=None, pages=N
     if pages is None:
         params += '&dropListSize=25'
     else:
-        params += '&dropListSize=%s' % str(25 * pages)
+        params += '&dropListSize=%s' % str(25 * int(pages))
 
     if file_name is None:
         data_parsed = datetime.datetime.now()
